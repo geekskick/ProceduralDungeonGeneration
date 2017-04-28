@@ -6,6 +6,7 @@
 #include "tests.h"
 #include "utilities_t.h"
 
+
 int main( )
 {
 	const int dungeon_width = 50;
@@ -13,7 +14,7 @@ int main( )
 	const int max_rooms = 20;
 	const int max_room_dim = std::max(dungeon_height, dungeon_width)/4;
 	const int num_dungeons = 5;
-
+	player_t p1;
 	dungeon_t dung(dungeon_height,dungeon_width);
 
 	//tests::room_overlap(dung);
@@ -34,6 +35,7 @@ int main( )
 			dung.add_room( temp_room );
 		}
 
+		p1.position() = dung.get_room(0).get_centre();
 		dung.show();
 	}
 

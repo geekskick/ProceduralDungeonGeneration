@@ -105,3 +105,12 @@ void dungeon_t::join_last_added_room( void )
 	}
 }
 
+const position_t &dungeon_t::update_player_position( const position_t new_position )
+{
+	if(player_is_in_room(new_position))
+	{
+		m_player->position() = new_position;
+	}
+	return m_player->position();
+}
+
