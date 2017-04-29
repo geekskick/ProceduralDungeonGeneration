@@ -24,6 +24,8 @@ int main( )
 	{
 		std::cout << "Dungeon number " << d+1 << " is :" << std::endl;
 		dung.clear_all_rooms();
+
+		//generate dungeon
 		for( int i = 0; i < max_rooms; i++ )
 		{
 			position_t room_top_left = {utilities_t::get().get_rand_in_range( dungeon_height ),
@@ -35,8 +37,46 @@ int main( )
 			dung.add_room( temp_room );
 		}
 
+		//Create player in first room
+		dung.create_exit();
 		p1.position() = dung.get_room(0).get_centre();
+		dung.add_player(p1);
 		dung.show();
+
+		// move the player
+		char inp;
+		std::cin >> inp;
+
+		while(inp != 'q')
+		{
+			switch(inp)
+			{
+				case 'a': //left
+					p1.position().set_x(p1.get_x() - 1);
+					break;
+				case 's': //down
+					p1.position().set_y(p1.get_y() + 1);
+					break;
+				case 'd': //right
+					p1.position().set_x(p1.get_x() + 1);
+					break;
+				case 'w': //up
+					p1.position().set_y(p1.get_y() - 1);
+					break;
+				default:
+					break;
+			}
+			p1.position() = dung.update_player_position(p1.position());
+
+			if( dung.player_has_found_exit() )
+			{
+				std::cout << "ESCAPE!" << std::endl;
+				break;
+			}
+			dung.show();
+
+			std::cin >> inp;
+		}
 	}
 
 

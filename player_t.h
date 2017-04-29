@@ -18,11 +18,18 @@ public:
 
 	const int get_y( void ) const { return m_location.get_y(); }
 
+	char get_icon( void ) const { return m_icon; }
 	position_t &position( void ) { return m_location; }
+	const position_t &position( void ) const { return m_location; }
 
+	player_t(const player_t& p)
+			: m_location(p.position()),
+			  m_icon(p.get_icon())  { }
 protected:
 	position_t m_location;
-	const char m_icon;
+	char m_icon;
+
 };
+
 
 #endif //DUNGEON_PLAYER_T_H

@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <sstream>
 #include "dungeon_t.h"
 #include "utilities_t.h"
 
@@ -37,7 +38,8 @@ void dungeon_t::show( void ) const
 }
 
 dungeon_t::dungeon_t( const int h, const int w, const char wall )
-		: m_rooms(), m_map(h, std::vector<char>(w, wall)), m_w(w), m_h(h), m_wall(wall)
+		: m_rooms(), m_map(h, std::vector<char>(w, wall)), m_w(w), m_h(h), m_wall(wall),
+		  m_player(), m_exit_location({0,0})
 {}
 
 void dungeon_t::add_room_to_map( const room_t &r )
@@ -105,12 +107,71 @@ void dungeon_t::join_last_added_room( void )
 	}
 }
 
-const position_t &dungeon_t::update_player_position( const position_t new_position )
+const position_t &dungeon_t::update_player_position( position_t new_position )
 {
 	if(player_is_in_room(new_position))
 	{
-		m_player->position() = new_position;
+		//clear old locations on map
+		m_map[m_player.get_y()][m_player.get_x()] = ' ';
+
+		//set the new location on the map
+		m_player.position() = new_position;
+		m_map[m_player.get_y()][m_player.get_x()];
+		m_map[m_player.get_y()][m_player.get_x()] = m_player.get_icon();
+
+		//debugging
+		std::stringstream ss;
+		ss << "The player is at (" << m_player.get_y() << "," << m_player.get_x() << ")";
+		utilities_t::get().debug_print(ss.str());
 	}
-	return m_player->position();
+	return m_player.position();
+}
+
+bool dungeon_t::player_is_in_room( const position_t& new_position ) const
+{
+	return m_map[new_position.get_y()][new_position.get_x()] != m_wall;
+}
+
+bool dungeon_t::player_has_found_exit( void ) const
+{
+	return m_player.position() == m_exit_location;
+}
+
+void dungeon_t::create_exit( void )
+{
+	// Create an exit in the middle of one of the rooms
+	int rand_room = utilities_t::get().get_rand_in_range(m_rooms.size()-1);
+	room_t& r = m_rooms[rand_room];
+	position_t c = r.get_centre();
+	m_exit_location = c;
+	m_map[m_exit_location.get_y()][m_exit_location.get_x()] = '@';
+
+}
+
+const position_t &dungeon_t::add_player( player_t &player )
+{
+
+	if(player_is_in_room(player.position()))
+	{
+		//set the new location
+		m_player = player;
+		m_map[m_player.get_y()][m_player.get_x()];
+		m_map[m_player.get_y()][m_player.get_x()] = m_player.get_icon();
+
+		//debugging
+		std::stringstream ss;
+		ss << "The player is at (" << m_player.get_y() << "," << m_player.get_x() << ")";
+		utilities_t::get().debug_print(ss.str());
+	}
+	else{
+		// if not a viable location recursively find the next most viable location
+		utilities_t::get().debug_print( "No player added trying again");
+		if(player.get_y() - 1 != m_wall) { player.position().set_y(player.get_y() - 1); }
+		else if(player.get_y() + 1 != m_wall) { player.position().set_y(player.get_y() + 1);}
+		else if(player.get_x() - 1 != m_wall) { player.position().set_x(player.get_x() - 1);}
+		else if(player.get_x() + 1 != m_wall) { player.position().set_x(player.get_x() + 1);}
+		add_player(player);
+	}
+	return m_player.position();
 }
 

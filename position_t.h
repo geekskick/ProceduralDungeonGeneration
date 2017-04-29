@@ -11,16 +11,16 @@ class position_t: public std::pair<int, int>
 {
 public:
 	position_t(const int y, const int x)
-			: m_x(x), m_y(y)
+			: std::pair<int, int>(y, x)
 	{}
 
-	int get_x( void ) const{ return m_x; }
-	void set_x( int x ) { m_x = x; }
-	int get_y( void ) const { return m_y; }
-	void set_y( int y ){ m_y = y; }
+	int get_x( void ) const{ return second; }
+	void set_x( int x ) { second = x; }
+	int get_y( void ) const { return first; }
+	void set_y( int y ){ first = y; }
 
 protected:
-	int m_x, m_y;
+
 };
 
 
