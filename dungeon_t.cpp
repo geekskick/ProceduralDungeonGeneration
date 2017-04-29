@@ -26,6 +26,7 @@ size_t dungeon_t::add_room(const room_t r)
 
 void dungeon_t::show( void ) const
 {
+	std::cout << std::string(100,'\n');
 	utilities_t::get().debug_print("Dungeon is as follows:");
 	for(std::vector<std::vector<char>>::const_iterator it = m_map.begin(); it != m_map.end(); it++)
 	{
