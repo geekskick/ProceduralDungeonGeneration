@@ -90,13 +90,13 @@ bool dungeon_t::rooms_overlap( const room_t &first, const room_t &second ) const
 
 void dungeon_t::join_rooms( void )
 {
-	m_rj_strat = new half_rjs();
+	bool strat_created = false;
+	if(m_rj_strat == NULL) { m_rj_strat = new half_rjs(); strat_created = true;}
 	for(int i = 1; i < m_rooms.size(); i++)
 	{
 		m_rj_strat->join_rooms( m_rooms[i-1], m_rooms[i], m_map );
 	}
-
-	delete m_rj_strat;
+	if(strat_created){ delete m_rj_strat; }
 }
 
 void dungeon_t::join_last_added_room( void )
@@ -106,6 +106,7 @@ void dungeon_t::join_last_added_room( void )
 	{
 		m_rj_strat->join_rooms( m_rooms[m_rooms.size() - 2], m_rooms[m_rooms.size() - 1], m_map );
 	}
+	delete m_rj_strat;
 }
 
 const position_t &dungeon_t::update_player_position( position_t new_position )

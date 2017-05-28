@@ -14,6 +14,7 @@ int main( )
 	const int max_rooms = 20;
 	const int max_room_dim = std::max(dungeon_height, dungeon_width)/4;
 	const int num_dungeons = 5;
+
 	player_t p1;
 	dungeon_t dung(dungeon_height,dungeon_width);
 
