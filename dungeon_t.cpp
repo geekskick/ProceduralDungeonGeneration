@@ -40,7 +40,7 @@ void dungeon_t::show( void ) const
 
 dungeon_t::dungeon_t( const int h, const int w, const char wall )
 		: m_rooms(), m_map(h, std::vector<char>(w, wall)), m_w(w), m_h(h), m_wall(wall),
-		  m_player(), m_exit_location({0,0})
+		  m_player(), m_exit_location({0,0}), m_rj_strat(NULL)
 {}
 
 void dungeon_t::add_room_to_map( const room_t &r )
@@ -56,6 +56,7 @@ void dungeon_t::add_room_to_map( const room_t &r )
 
 void dungeon_t::check_bounds( const room_t &r ) const
 {
+	// No need to check the top and left as the values are always positive.
 	if( r.get_right_edge() >= m_map[0].size() ||
 		r.get_bottom_edge() >= m_map.size() ) { throw  std::runtime_error("Room goes outside of dungeon"); }
 
@@ -96,17 +97,18 @@ void dungeon_t::join_rooms( void )
 	{
 		m_rj_strat->join_rooms( m_rooms[i-1], m_rooms[i], m_map );
 	}
-	if(strat_created){ delete m_rj_strat; }
+	if(strat_created){ delete m_rj_strat; m_rj_strat = NULL; }
 }
 
 void dungeon_t::join_last_added_room( void )
 {
-	m_rj_strat = new half_rjs();
+	bool strat_created = false;
+	if(m_rj_strat == NULL){ m_rj_strat = new half_rjs(); strat_created = true; }
 	if( m_rooms.size() > 1 )
 	{
 		m_rj_strat->join_rooms( m_rooms[m_rooms.size() - 2], m_rooms[m_rooms.size() - 1], m_map );
 	}
-	delete m_rj_strat;
+	if(strat_created){ delete m_rj_strat; m_rj_strat = NULL; }
 }
 
 const position_t &dungeon_t::update_player_position( position_t new_position )
